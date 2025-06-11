@@ -12,6 +12,14 @@ func main() {
     login := promptData("Введите логин: ")
     password := promptData("Введите пароль: ")
     url := promptData("Введите URL: ")
+    
+    accountNew := account{
+        login: login,
+        password: password,
+        url: url,
+    }
+    
+    fmt.Println(accountNew)
 
 }
 
