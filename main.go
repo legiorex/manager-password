@@ -6,12 +6,19 @@ import (
 	"math/rand/v2"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type account struct {
 	login    string
 	password string
 	url      string
+}
+
+type accountWithTimeStamp struct {
+	createdAt time.Time
+	updatedAt time.Time
+	account
 }
 
 func (acc *account) printAccount() {
@@ -48,7 +55,32 @@ func (acc *account) generatePassword(n int) {
 	acc.password = resultPassword
 }
 
-func newAccount(login, password, urlUser string) (*account, error) {
+// func newAccount(login, password, urlUser string) (*account, error) {
+
+// 	if login == "" {
+// 		return nil, errors.New("INVALID_LOGIN")
+// 	}
+
+// 	_, errUrl := url.ParseRequestURI(urlUser)
+
+// 	if errUrl != nil {
+// 		return nil, errors.New("INVALID_URL")
+// 	}
+
+// 	acc := &account{
+// 		login:    login,
+// 		password: password,
+// 		url:      urlUser,
+// 	}
+
+// 	if acc.password == "" {
+// 		acc.generatePassword(12)
+// 	}
+
+// 	return acc, nil
+// }
+
+func newAccountWithTimeStamp(login, password, urlUser string) (*accountWithTimeStamp, error) {
 
 	if login == "" {
 		return nil, errors.New("INVALID_LOGIN")
@@ -60,10 +92,15 @@ func newAccount(login, password, urlUser string) (*account, error) {
 		return nil, errors.New("INVALID_URL")
 	}
 
-	acc := &account{
-		login:    login,
-		password: password,
-		url:      urlUser,
+	acc := &accountWithTimeStamp{
+
+		createdAt: time.Now(),
+		updatedAt: time.Now(),
+		account: account{
+			login:    login,
+			password: password,
+			url:      urlUser,
+		},
 	}
 
 	if acc.password == "" {
@@ -79,7 +116,7 @@ func main() {
 	password := promptData("Введите пароль")
 	url := promptData("Введите URL")
 
-	myAccount, err := newAccount(login, password, url)
+	myAccount, err := newAccountWithTimeStamp(login, password, url)
 
 	// fmt.Println(err)
 
