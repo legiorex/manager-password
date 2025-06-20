@@ -12,6 +12,12 @@ type account struct {
 	url      string
 }
 
+func (acc account) printAccount() {
+	fmt.Println("Логин: ", acc.login)
+	fmt.Println("Пароль: ", acc.password)
+	fmt.Println("URL: ", acc.url)
+}
+
 func main() {
 	generatePassword(25)
 
@@ -25,7 +31,7 @@ func main() {
 		url:      url,
 	}
 
-	printAccount(&accountNew)
+	accountNew.printAccount()
 
 }
 
@@ -34,12 +40,6 @@ func promptData(message string) string {
 	var result string
 	fmt.Scanln(&result)
 	return result
-}
-
-func printAccount(acc *account) {
-	fmt.Println("Логин: ", acc.login)
-	fmt.Println("Пароль: ", acc.password)
-	fmt.Println("URL: ", acc.url)
 }
 
 func generatePassword(n int) {
