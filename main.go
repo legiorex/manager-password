@@ -46,23 +46,27 @@ func (acc *account) generatePassword(n int) {
 	acc.password = resultPassword
 }
 
+func newAccount(login, password, url string) *account {
+	return &account{
+		login:    login,
+		password: password,
+		url:      url,
+	}
+}
+
 func main() {
 
 	login := promptData("Введите логин")
 	password := promptData("Введите пароль")
 	url := promptData("Введите URL")
 
-	accountNew := account{
-		login:    login,
-		password: password,
-		url:      url,
+	myAccount := newAccount(login, password, url)
+
+	if myAccount.password == "" {
+		myAccount.generatePassword(12)
 	}
 
-	if accountNew.password == "" {
-		accountNew.generatePassword(12)
-	}
-
-	accountNew.printAccount()
+	myAccount.printAccount()
 
 }
 
