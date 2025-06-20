@@ -1,8 +1,10 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"math/rand/v2"
+	"net/url"
 	"strings"
 )
 
@@ -46,12 +48,29 @@ func (acc *account) generatePassword(n int) {
 	acc.password = resultPassword
 }
 
-func newAccount(login, password, url string) *account {
-	return &account{
+func newAccount(login, password, urlUser string) (*account, error) {
+
+	if login == "" {
+		return nil, errors.New("INVALID_LOGIN")
+	}
+
+	_, errUrl := url.ParseRequestURI(urlUser)
+
+	if errUrl != nil {
+		return nil, errors.New("INVALID_URL")
+	}
+
+	acc := &account{
 		login:    login,
 		password: password,
-		url:      url,
+		url:      urlUser,
 	}
+
+	if acc.password == "" {
+		acc.generatePassword(12)
+	}
+
+	return acc, nil
 }
 
 func main() {
@@ -60,10 +79,13 @@ func main() {
 	password := promptData("Введите пароль")
 	url := promptData("Введите URL")
 
-	myAccount := newAccount(login, password, url)
+	myAccount, err := newAccount(login, password, url)
 
-	if myAccount.password == "" {
-		myAccount.generatePassword(12)
+	// fmt.Println(err)
+
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
 
 	myAccount.printAccount()
