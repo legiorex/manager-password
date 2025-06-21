@@ -9,6 +9,8 @@ import (
 
 func main() {
 
+	files.WriteFile("Hello", "text.txt")
+
 	login := promptData("Введите логин")
 	password := promptData("Введите пароль")
 	url := promptData("Введите URL")
