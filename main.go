@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/legiorex/manager-password/account"
+	"github.com/legiorex/manager-password/files"
 )
 
 func main() {
@@ -22,6 +23,7 @@ func main() {
 	}
 
 	myAccount.PrintAccount()
+	files.ReadFile()
 
 }
 
