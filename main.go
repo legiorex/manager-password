@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/legiorex/manager-password/account"
 )
 
 func main() {
@@ -10,7 +12,7 @@ func main() {
 	password := promptData("Введите пароль")
 	url := promptData("Введите URL")
 
-	myAccount, err := newAccountWithTimeStamp(login, password, url)
+	myAccount, err := account.NewAccountWithTimeStamp(login, password, url)
 
 	// fmt.Println(err)
 
@@ -19,7 +21,7 @@ func main() {
 		return
 	}
 
-	myAccount.printAccount()
+	myAccount.PrintAccount()
 
 }
 

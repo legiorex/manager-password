@@ -1,4 +1,4 @@
-package main
+package account
 
 import (
 	"errors"
@@ -9,25 +9,25 @@ import (
 	"time"
 )
 
-type account struct {
+type Account struct {
 	login    string
 	password string
 	url      string
 }
 
-type accountWithTimeStamp struct {
+type AccountWithTimeStamp struct {
 	createdAt time.Time
 	updatedAt time.Time
-	account
+	Account
 }
 
-func (acc *account) printAccount() {
+func (acc *Account) PrintAccount() {
 	fmt.Println("Логин: ", acc.login)
 	fmt.Println("Пароль: ", acc.password)
 	fmt.Println("URL: ", acc.url)
 }
 
-func (acc *account) generatePassword(n int) {
+func (acc *Account) generatePassword(n int) {
 
 	// создаем 32-байтное семя для инициализации генератора
 	seed := [32]byte{'s', 'o', 'm', 'e', 'k', 'e', 'y', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd', 'e', 'f'}
@@ -80,7 +80,7 @@ func (acc *account) generatePassword(n int) {
 // 	return acc, nil
 // }
 
-func newAccountWithTimeStamp(login, password, urlUser string) (*accountWithTimeStamp, error) {
+func NewAccountWithTimeStamp(login, password, urlUser string) (*AccountWithTimeStamp, error) {
 
 	if login == "" {
 		return nil, errors.New("INVALID_LOGIN")
@@ -92,11 +92,11 @@ func newAccountWithTimeStamp(login, password, urlUser string) (*accountWithTimeS
 		return nil, errors.New("INVALID_URL")
 	}
 
-	acc := &accountWithTimeStamp{
+	acc := &AccountWithTimeStamp{
 
 		createdAt: time.Now(),
 		updatedAt: time.Now(),
-		account: account{
+		Account: Account{
 			login:    login,
 			password: password,
 			url:      urlUser,
