@@ -3,11 +3,87 @@ package main
 import (
 	"fmt"
 
+	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
-	"github.com/legiorex/manager-password/files"
 )
 
+var FILE_NAME = "pass.json"
+
 func main() {
+
+	vault := account.NewVault()
+
+menu:
+	for {
+		variant := getMenu()
+		switch variant {
+		case 1:
+			createAccount(vault)
+
+		case 2:
+			searchAccount(vault)
+
+		case 3:
+			deleteAccount(vault)
+
+		default:
+			break menu
+		}
+	}
+
+}
+
+func getMenu() int {
+
+	green := color.New(color.FgGreen)
+	red := color.New(color.FgRed)
+	blue := color.New(color.FgBlue)
+	yellow := color.New(color.FgYellow)
+
+	green.Println("Создать аккаунт: 1")
+	blue.Println("Найти аккаунт: 2")
+	red.Println("Удалить аккаунт: 3")
+	yellow.Println("Выход: 4")
+
+	var variant int
+	fmt.Scanln(&variant)
+
+	return variant
+
+}
+
+func searchAccount(vault *account.Vault) {
+
+	url := promptData("Введите URL")
+
+	searchResult := vault.SearchAccountByUrl(url)
+
+	if len(searchResult) == 0 {
+		color.Cyan("Пароли не найдены")
+	}
+
+	for _, acc := range searchResult {
+		acc.PrintAccount()
+	}
+
+}
+
+func deleteAccount(vault *account.Vault) {
+
+	url := promptData("Введите URL")
+
+	isDelete := vault.DeleteAccountByUrl(url)
+
+	if isDelete {
+		color.Green("Аккаунт успешно удален")
+	} else {
+
+		color.Red("Ошибка удаления аккаунта")
+	}
+
+}
+
+func createAccount(vault *account.Vault) {
 
 	login := promptData("Введите логин")
 	password := promptData("Введите пароль")
@@ -15,16 +91,16 @@ func main() {
 
 	myAccount, err := account.NewAccountWithTimeStamp(login, password, url)
 
-	// fmt.Println(err)
-
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	myAccount.PrintAccount()
-	files.ReadFile()
-
+	err = vault.AddAccount(*myAccount)
+	if err != nil {
+		color.Red("Ошибка при сохранении аккаунта")
+	}
+	color.Green("Запись успешна")
 }
 
 func promptData(message string) string {

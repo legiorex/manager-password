@@ -11,22 +11,22 @@ import (
 )
 
 type Account struct {
-	login    string
-	password string
-	url      string
+	Login    string `json:"login"`
+	Password string `json:"password"`
+	Url      string `json:"url"`
 }
 
 type AccountWithTimeStamp struct {
-	createdAt time.Time
-	updatedAt time.Time
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
 	Account
 }
 
 func (acc *Account) PrintAccount() {
 	c := color.New(color.FgCyan).Add(color.Underline)
-	c.Println("Логин: ", acc.login)
-	c.Println("Пароль: ", acc.password)
-	c.Println("URL: ", acc.url)
+	c.Println("Логин: ", acc.Login)
+	c.Println("Пароль: ", acc.Password)
+	c.Println("URL: ", acc.Url)
 }
 
 func (acc *Account) generatePassword(n int) {
@@ -54,7 +54,7 @@ func (acc *Account) generatePassword(n int) {
 
 	resultPassword := strBuilder.String()
 
-	acc.password = resultPassword
+	acc.Password = resultPassword
 }
 
 // func newAccount(login, password, urlUser string) (*account, error) {
@@ -96,16 +96,16 @@ func NewAccountWithTimeStamp(login, password, urlUser string) (*AccountWithTimeS
 
 	acc := &AccountWithTimeStamp{
 
-		createdAt: time.Now(),
-		updatedAt: time.Now(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 		Account: Account{
-			login:    login,
-			password: password,
-			url:      urlUser,
+			Login:    login,
+			Password: password,
+			Url:      urlUser,
 		},
 	}
 
-	if acc.password == "" {
+	if acc.Password == "" {
 		acc.generatePassword(12)
 	}
 
