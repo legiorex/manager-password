@@ -5,21 +5,23 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
-	"github.com/legiorex/manager-password/files"
 )
 
 var FILE_NAME = "pass.json"
 
 func main() {
+
+	vault := account.NewVault()
+
 menu:
 	for {
 		variant := getMenu()
 		switch variant {
 		case 1:
-			createAccount()
+			createAccount(vault)
 
 		case 2:
-			searchAccount()
+			searchAccount(vault)
 
 		case 3:
 			deleteAccount()
@@ -50,9 +52,19 @@ func getMenu() int {
 
 }
 
-func searchAccount() {
+func searchAccount(vault *account.Vault) {
 
-	fmt.Println("searchAccount")
+	url := promptData("Введите URL")
+
+	searchResult := vault.SearchAccountByUrl(url)
+
+	if len(searchResult) == 0 {
+		color.Cyan("Пароли не найдены")
+	}
+
+	for _, acc := range searchResult {
+		acc.PrintAccount()
+	}
 
 }
 
@@ -62,7 +74,7 @@ func deleteAccount() {
 
 }
 
-func createAccount() {
+func createAccount(vault *account.Vault) {
 
 	login := promptData("Введите логин")
 	password := promptData("Введите пароль")
@@ -75,20 +87,7 @@ func createAccount() {
 		return
 	}
 
-	vault := account.NewVault()
 	vault.AddAccount(*myAccount)
-
-	file, err := vault.ToBytes()
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	files.WriteFile(file, FILE_NAME)
-
-	files.ReadFile(FILE_NAME)
-
 }
 
 func promptData(message string) string {
