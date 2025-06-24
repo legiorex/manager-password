@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
 	"github.com/legiorex/manager-password/files"
 )
@@ -10,8 +11,54 @@ import (
 var FILE_NAME = "pass.json"
 
 func main() {
+menu:
+	for {
+		variant := getMenu()
+		switch variant {
+		case 1:
+			createAccount()
 
-	createAccount()
+		case 2:
+			searchAccount()
+
+		case 3:
+			deleteAccount()
+
+		default:
+			break menu
+		}
+	}
+
+}
+
+func getMenu() int {
+
+	green := color.New(color.FgGreen)
+	red := color.New(color.FgRed)
+	blue := color.New(color.FgBlue)
+	yellow := color.New(color.FgYellow)
+
+	green.Println("Создать аккаунт: 1")
+	blue.Println("Найти аккаунт: 2")
+	red.Println("Удалить аккаунт: 3")
+	yellow.Println("Выход: 4")
+
+	var variant int
+	fmt.Scanln(&variant)
+
+	return variant
+
+}
+
+func searchAccount() {
+
+	fmt.Println("searchAccount")
+
+}
+
+func deleteAccount() {
+
+	fmt.Println("deleteAccount")
 
 }
 
