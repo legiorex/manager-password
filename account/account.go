@@ -1,7 +1,6 @@
 package account
 
 import (
-	"encoding/json"
 	"errors"
 	"math/rand/v2"
 	"net/url"
@@ -28,16 +27,6 @@ func (acc *Account) PrintAccount() {
 	c.Println("Логин: ", acc.Login)
 	c.Println("Пароль: ", acc.Password)
 	c.Println("URL: ", acc.Url)
-}
-
-func (acc *AccountWithTimeStamp) ToBytes() ([]byte, error) {
-
-	file, err := json.Marshal(acc)
-
-	if err != nil {
-		return nil, err
-	}
-	return file, nil
 }
 
 func (acc *Account) generatePassword(n int) {
