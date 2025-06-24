@@ -5,13 +5,14 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
+	"github.com/legiorex/manager-password/files"
 )
 
 var FILE_NAME = "pass.json"
 
 func main() {
 
-	vault := account.NewVault()
+	vault := account.NewVault(files.NewJsonDb(FILE_NAME))
 
 menu:
 	for {
@@ -52,7 +53,7 @@ func getMenu() int {
 
 }
 
-func searchAccount(vault *account.Vault) {
+func searchAccount(vault *account.VaultWithDb) {
 
 	url := promptData("Введите URL")
 
@@ -68,7 +69,7 @@ func searchAccount(vault *account.Vault) {
 
 }
 
-func deleteAccount(vault *account.Vault) {
+func deleteAccount(vault *account.VaultWithDb) {
 
 	url := promptData("Введите URL")
 
@@ -83,7 +84,7 @@ func deleteAccount(vault *account.Vault) {
 
 }
 
-func createAccount(vault *account.Vault) {
+func createAccount(vault *account.VaultWithDb) {
 
 	login := promptData("Введите логин")
 	password := promptData("Введите пароль")
