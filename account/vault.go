@@ -39,18 +39,16 @@ func NewVault() *Vault {
 
 }
 
-func (vault *Vault) AddAccount(acc AccountWithTimeStamp) {
+func (vault *Vault) AddAccount(acc AccountWithTimeStamp) error {
 	vault.Accounts = append(vault.Accounts, acc)
-	vault.UpdatedAt = time.Now()
 
-	data, err := vault.ToBytes()
+	err := vault.save()
 
 	if err != nil {
-		color.Red(err.Error())
+		return err
 	}
 
-	files.WriteFile(data, FILE_NAME)
-
+	return nil
 }
 
 func (vault *Vault) ToBytes() ([]byte, error) {
@@ -79,4 +77,41 @@ func (vault *Vault) SearchAccountByUrl(url string) []AccountWithTimeStamp {
 
 	return searchResult
 
+}
+
+func (vault *Vault) DeleteAccountByUrl(url string) bool {
+
+	var searchResult []AccountWithTimeStamp
+
+	isDelete := false
+
+	for _, acc := range vault.Accounts {
+
+		isSearch := strings.Contains(acc.Url, url)
+
+		if !isSearch {
+			searchResult = append(searchResult, acc)
+			continue
+		}
+		isDelete = true
+
+	}
+
+	vault.Accounts = searchResult
+
+	vault.save()
+	return isDelete
+
+}
+
+func (vault *Vault) save() error {
+	vault.UpdatedAt = time.Now()
+
+	data, err := vault.ToBytes()
+
+	if err != nil {
+		return err
+	}
+	files.WriteFile(data, FILE_NAME)
+	return nil
 }
