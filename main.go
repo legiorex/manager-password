@@ -37,6 +37,8 @@ menu:
 
 func getMenu() int {
 
+	// promptData2([]string{"Hello", "Buy"})
+
 	green := color.New(color.FgGreen)
 	red := color.New(color.FgRed)
 	blue := color.New(color.FgBlue)
@@ -112,3 +114,21 @@ func promptData(message string) string {
 	fmt.Scanln(&result)
 	return result
 }
+
+// func promptData2[T any](values []T) string {
+
+// 	for i, item := range values {
+
+// 		if i == len(values)-1 {
+// 			fmt.Printf("%v :", item)
+// 		} else {
+
+// 			fmt.Println(item)
+// 		}
+
+// 	}
+
+// 	var result string
+// 	fmt.Scanln(&result)
+// 	return result
+// }

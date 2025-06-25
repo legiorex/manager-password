@@ -17,3 +17,8 @@ func PrintError(value any) {
 	}
 
 }
+
+func sum[T int | int16 | int64](a, b T) T {
+
+	return a + b
+}
