@@ -6,8 +6,25 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/legiorex/manager-password/files"
 )
+
+type ByteReader interface {
+	Read() ([]byte, error)
+}
+
+type ByteWriter interface {
+	Write([]byte)
+}
+
+type Db interface {
+	ByteReader
+	ByteWriter
+}
+
+// type Db interface {
+// 	Read() ([]byte, error)
+// 	Write([]byte)
+// }
 
 type Vault struct {
 	Accounts  []AccountWithTimeStamp `json:"accounts"`
@@ -16,10 +33,10 @@ type Vault struct {
 
 type VaultWithDb struct {
 	Vault
-	db files.JsonDb
+	db Db
 }
 
-func NewVault(db *files.JsonDb) *VaultWithDb {
+func NewVault(db Db) *VaultWithDb {
 
 	file, err := db.Read()
 
@@ -30,7 +47,7 @@ func NewVault(db *files.JsonDb) *VaultWithDb {
 				Accounts:  []AccountWithTimeStamp{},
 				UpdatedAt: time.Now(),
 			},
-			db: *db,
+			db: db,
 		}
 	}
 
@@ -45,13 +62,13 @@ func NewVault(db *files.JsonDb) *VaultWithDb {
 				Accounts:  []AccountWithTimeStamp{},
 				UpdatedAt: time.Now(),
 			},
-			db: *db,
+			db: db,
 		}
 	}
 
 	return &VaultWithDb{
 		Vault: vault,
-		db:    *db,
+		db:    db,
 	}
 
 }
