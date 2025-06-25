@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
+	"github.com/legiorex/manager-password/output"
 )
 
 type ByteReader interface {
@@ -55,7 +55,7 @@ func NewVault(db Db) *VaultWithDb {
 	err = json.Unmarshal(file, &vault)
 
 	if err != nil {
-		color.Red(err.Error())
+		output.PrintError(err)
 
 		return &VaultWithDb{
 			Vault: Vault{

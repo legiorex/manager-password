@@ -6,6 +6,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
 	"github.com/legiorex/manager-password/files"
+	"github.com/legiorex/manager-password/output"
 )
 
 var FILE_NAME = "pass.json"
@@ -79,7 +80,8 @@ func deleteAccount(vault *account.VaultWithDb) {
 		color.Green("Аккаунт успешно удален")
 	} else {
 
-		color.Red("Ошибка удаления аккаунта")
+		output.PrintError("Ошибка удаления аккаунта")
+
 	}
 
 }
@@ -93,13 +95,13 @@ func createAccount(vault *account.VaultWithDb) {
 	myAccount, err := account.NewAccountWithTimeStamp(login, password, url)
 
 	if err != nil {
-		fmt.Println(err)
+		output.PrintError(err)
 		return
 	}
 
 	err = vault.AddAccount(*myAccount)
 	if err != nil {
-		color.Red("Ошибка при сохранении аккаунта")
+		output.PrintError("Ошибка при сохранении аккаунта")
 	}
 	color.Green("Запись успешна")
 }
