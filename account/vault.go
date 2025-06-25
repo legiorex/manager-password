@@ -5,26 +5,49 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fatih/color"
-	"github.com/legiorex/manager-password/files"
+	"github.com/legiorex/manager-password/output"
 )
 
-var FILE_NAME = "pass.json"
+type ByteReader interface {
+	Read() ([]byte, error)
+}
+
+type ByteWriter interface {
+	Write([]byte)
+}
+
+type Db interface {
+	ByteReader
+	ByteWriter
+}
+
+// type Db interface {
+// 	Read() ([]byte, error)
+// 	Write([]byte)
+// }
 
 type Vault struct {
 	Accounts  []AccountWithTimeStamp `json:"accounts"`
 	UpdatedAt time.Time              `json:"updatedAt"`
 }
 
-func NewVault() *Vault {
+type VaultWithDb struct {
+	Vault
+	db Db
+}
 
-	file, err := files.ReadFile(FILE_NAME)
+func NewVault(db Db) *VaultWithDb {
+
+	file, err := db.Read()
 
 	if err != nil {
 
-		return &Vault{
-			Accounts:  []AccountWithTimeStamp{},
-			UpdatedAt: time.Now(),
+		return &VaultWithDb{
+			Vault: Vault{
+				Accounts:  []AccountWithTimeStamp{},
+				UpdatedAt: time.Now(),
+			},
+			db: db,
 		}
 	}
 
@@ -32,14 +55,25 @@ func NewVault() *Vault {
 	err = json.Unmarshal(file, &vault)
 
 	if err != nil {
-		color.Red(err.Error())
+		output.PrintError(err)
+
+		return &VaultWithDb{
+			Vault: Vault{
+				Accounts:  []AccountWithTimeStamp{},
+				UpdatedAt: time.Now(),
+			},
+			db: db,
+		}
 	}
 
-	return &vault
+	return &VaultWithDb{
+		Vault: vault,
+		db:    db,
+	}
 
 }
 
-func (vault *Vault) AddAccount(acc AccountWithTimeStamp) error {
+func (vault *VaultWithDb) AddAccount(acc AccountWithTimeStamp) error {
 	vault.Accounts = append(vault.Accounts, acc)
 
 	err := vault.save()
@@ -61,7 +95,7 @@ func (vault *Vault) ToBytes() ([]byte, error) {
 	return file, nil
 }
 
-func (vault *Vault) SearchAccountByUrl(url string) []AccountWithTimeStamp {
+func (vault *VaultWithDb) SearchAccountByUrl(url string) []AccountWithTimeStamp {
 
 	var searchResult []AccountWithTimeStamp
 
@@ -79,7 +113,7 @@ func (vault *Vault) SearchAccountByUrl(url string) []AccountWithTimeStamp {
 
 }
 
-func (vault *Vault) DeleteAccountByUrl(url string) bool {
+func (vault *VaultWithDb) DeleteAccountByUrl(url string) bool {
 
 	var searchResult []AccountWithTimeStamp
 
@@ -104,14 +138,14 @@ func (vault *Vault) DeleteAccountByUrl(url string) bool {
 
 }
 
-func (vault *Vault) save() error {
+func (vault *VaultWithDb) save() error {
 	vault.UpdatedAt = time.Now()
 
-	data, err := vault.ToBytes()
+	data, err := vault.Vault.ToBytes()
 
 	if err != nil {
 		return err
 	}
-	files.WriteFile(data, FILE_NAME)
+	vault.db.Write(data)
 	return nil
 }

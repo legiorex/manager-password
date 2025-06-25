@@ -3,11 +3,23 @@ package files
 import (
 	"fmt"
 	"os"
+
+	"github.com/legiorex/manager-password/output"
 )
 
-func ReadFile(fileName string) ([]byte, error) {
+type JsonDb struct {
+	fileName string
+}
 
-	data, err := os.ReadFile(fileName)
+func NewJsonDb(name string) *JsonDb {
+	return &JsonDb{
+		fileName: name,
+	}
+}
+
+func (db *JsonDb) Read() ([]byte, error) {
+
+	data, err := os.ReadFile(db.fileName)
 
 	if err != nil {
 		return nil, err
@@ -17,18 +29,19 @@ func ReadFile(fileName string) ([]byte, error) {
 
 }
 
-func WriteFile(content []byte, name string) {
-	file, err := os.Create(name)
+func (db *JsonDb) Write(content []byte) {
+	file, err := os.Create(db.fileName)
 
 	if err != nil {
-		fmt.Println(err)
+		output.PrintError(err)
 	}
 
 	_, err = file.Write(content)
 
 	if err != nil {
 		file.Close()
-		fmt.Println(err)
+		output.PrintError(err)
+
 		return
 	}
 	fmt.Println("Запись успешна")
