@@ -11,6 +11,12 @@ import (
 
 var FILE_NAME = "pass.json"
 
+var menu = map[int]func(*account.VaultWithDb){
+	1: createAccount,
+	2: searchAccount,
+	3: deleteAccount,
+}
+
 func main() {
 
 	vault := account.NewVault(files.NewJsonDb(FILE_NAME))
@@ -18,19 +24,27 @@ func main() {
 menu:
 	for {
 		variant := getMenu()
-		switch variant {
-		case 1:
-			createAccount(vault)
+		menuFunc := menu[variant]
 
-		case 2:
-			searchAccount(vault)
-
-		case 3:
-			deleteAccount(vault)
-
-		default:
+		if menuFunc != nil {
+			menuFunc(vault)
+		} else {
 			break menu
 		}
+
+		// switch variant {
+		// case 1:
+		// 	createAccount(vault)
+
+		// case 2:
+		// 	searchAccount(vault)
+
+		// case 3:
+		// 	deleteAccount(vault)
+
+		// default:
+		// 	break menu
+		// }
 	}
 
 }
