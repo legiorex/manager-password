@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
@@ -11,6 +12,13 @@ import (
 
 var FILE_NAME = "pass.json"
 
+var menu = map[int]func(*account.VaultWithDb){
+	1: createAccount,
+	2: searchAccountByUrl,
+	3: searchAccountByLogin,
+	4: deleteAccount,
+}
+
 func main() {
 
 	vault := account.NewVault(files.NewJsonDb(FILE_NAME))
@@ -18,19 +26,27 @@ func main() {
 menu:
 	for {
 		variant := getMenu()
-		switch variant {
-		case 1:
-			createAccount(vault)
+		menuFunc := menu[variant]
 
-		case 2:
-			searchAccount(vault)
-
-		case 3:
-			deleteAccount(vault)
-
-		default:
+		if menuFunc != nil {
+			menuFunc(vault)
+		} else {
 			break menu
 		}
+
+		// switch variant {
+		// case 1:
+		// 	createAccount(vault)
+
+		// case 2:
+		// 	searchAccount(vault)
+
+		// case 3:
+		// 	deleteAccount(vault)
+
+		// default:
+		// 	break menu
+		// }
 	}
 
 }
@@ -45,9 +61,10 @@ func getMenu() int {
 	yellow := color.New(color.FgYellow)
 
 	green.Println("Создать аккаунт: 1")
-	blue.Println("Найти аккаунт: 2")
-	red.Println("Удалить аккаунт: 3")
-	yellow.Println("Выход: 4")
+	blue.Println("Найти аккаунт по URL: 2")
+	blue.Println("Найти аккаунт по Логину: 3")
+	red.Println("Удалить аккаунт: 4")
+	yellow.Println("Выход: 5")
 
 	var variant int
 	fmt.Scanln(&variant)
@@ -56,14 +73,34 @@ func getMenu() int {
 
 }
 
-func searchAccount(vault *account.VaultWithDb) {
+func searchAccountByUrl(vault *account.VaultWithDb) {
 
-	url := promptData("Введите URL")
+	checkerByUrl := func(acc *account.AccountWithTimeStamp, str string) bool {
+		return strings.Contains(acc.Url, str)
+	}
 
-	searchResult := vault.SearchAccountByUrl(url)
+	searchAccount(vault, "Введите URL:", checkerByUrl)
+
+}
+
+func searchAccountByLogin(vault *account.VaultWithDb) {
+
+	checkerByLogin := func(acc *account.AccountWithTimeStamp, str string) bool {
+		return strings.Contains(acc.Login, str)
+	}
+
+	searchAccount(vault, "Введите Login:", checkerByLogin)
+
+}
+
+func searchAccount(vault *account.VaultWithDb, title string, checker func(*account.AccountWithTimeStamp, string) bool) {
+
+	searchStr := promptData(title)
+
+	searchResult := vault.SearchAccount(searchStr, checker)
 
 	if len(searchResult) == 0 {
-		color.Cyan("Пароли не найдены")
+		color.Cyan("Аккаунты не найдены")
 	}
 
 	for _, acc := range searchResult {

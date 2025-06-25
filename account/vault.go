@@ -95,13 +95,13 @@ func (vault *Vault) ToBytes() ([]byte, error) {
 	return file, nil
 }
 
-func (vault *VaultWithDb) SearchAccountByUrl(url string) []AccountWithTimeStamp {
+func (vault *VaultWithDb) SearchAccount(str string, checker func(*AccountWithTimeStamp, string) bool) []AccountWithTimeStamp {
 
 	var searchResult []AccountWithTimeStamp
 
 	for _, acc := range vault.Accounts {
 
-		isSearch := strings.Contains(acc.Url, url)
+		isSearch := checker(&acc, str)
 
 		if isSearch {
 			searchResult = append(searchResult, acc)
