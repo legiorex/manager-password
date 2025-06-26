@@ -6,11 +6,12 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/legiorex/manager-password/account"
+	"github.com/legiorex/manager-password/cryptography"
 	"github.com/legiorex/manager-password/files"
 	"github.com/legiorex/manager-password/output"
 )
 
-var FILE_NAME = "pass.json"
+var FILE_NAME = "pass"
 
 var menu = map[int]func(*account.VaultWithDb){
 	1: createAccount,
@@ -21,7 +22,7 @@ var menu = map[int]func(*account.VaultWithDb){
 
 func main() {
 
-	vault := account.NewVault(files.NewJsonDb(FILE_NAME))
+	vault := account.NewVault(files.NewJsonDb(FILE_NAME), *cryptography.NewCryptography())
 
 menu:
 	for {

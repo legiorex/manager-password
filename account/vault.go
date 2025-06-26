@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/legiorex/manager-password/cryptography"
 	"github.com/legiorex/manager-password/output"
 )
 
@@ -33,10 +34,11 @@ type Vault struct {
 
 type VaultWithDb struct {
 	Vault
-	db Db
+	db           Db
+	cryptography cryptography.Cryptography
 }
 
-func NewVault(db Db) *VaultWithDb {
+func NewVault(db Db, cryptography cryptography.Cryptography) *VaultWithDb {
 
 	file, err := db.Read()
 
@@ -47,12 +49,15 @@ func NewVault(db Db) *VaultWithDb {
 				Accounts:  []AccountWithTimeStamp{},
 				UpdatedAt: time.Now(),
 			},
-			db: db,
+			db:           db,
+			cryptography: cryptography,
 		}
 	}
 
+	data := cryptography.Decrypt(file)
+
 	var vault Vault
-	err = json.Unmarshal(file, &vault)
+	err = json.Unmarshal(data, &vault)
 
 	if err != nil {
 		output.PrintError(err)
@@ -62,13 +67,15 @@ func NewVault(db Db) *VaultWithDb {
 				Accounts:  []AccountWithTimeStamp{},
 				UpdatedAt: time.Now(),
 			},
-			db: db,
+			db:           db,
+			cryptography: cryptography,
 		}
 	}
 
 	return &VaultWithDb{
-		Vault: vault,
-		db:    db,
+		Vault:        vault,
+		db:           db,
+		cryptography: cryptography,
 	}
 
 }
@@ -143,9 +150,11 @@ func (vault *VaultWithDb) save() error {
 
 	data, err := vault.Vault.ToBytes()
 
+	cryptoData := vault.cryptography.Encrypt(data)
+
 	if err != nil {
 		return err
 	}
-	vault.db.Write(data)
+	vault.db.Write(cryptoData)
 	return nil
 }
