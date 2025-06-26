@@ -54,8 +54,10 @@ func NewVault(db Db, cryptography cryptography.Cryptography) *VaultWithDb {
 		}
 	}
 
+	data := cryptography.Decrypt(file)
+
 	var vault Vault
-	err = json.Unmarshal(file, &vault)
+	err = json.Unmarshal(data, &vault)
 
 	if err != nil {
 		output.PrintError(err)
@@ -148,9 +150,11 @@ func (vault *VaultWithDb) save() error {
 
 	data, err := vault.Vault.ToBytes()
 
+	cryptoData := vault.cryptography.Encrypt(data)
+
 	if err != nil {
 		return err
 	}
-	vault.db.Write(data)
+	vault.db.Write(cryptoData)
 	return nil
 }

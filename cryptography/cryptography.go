@@ -32,7 +32,7 @@ func NewCryptography() *Cryptography {
 	}
 }
 
-func (cry *Cryptography) Encrypt(bytes []byte) []byte {
+func (cry *Cryptography) Encrypt(encryptBytes []byte) []byte {
 
 	block, err := aes.NewCipher([]byte(cry.Key))
 
@@ -54,10 +54,33 @@ func (cry *Cryptography) Encrypt(bytes []byte) []byte {
 		panic(err.Error())
 	}
 
-	return aesGCM.Seal(nonce, nonce, bytes, nil)
+	return aesGCM.Seal(nonce, nonce, encryptBytes, nil)
 
 }
 
-func (cry *Cryptography) Decrypt(plainString string) string {
-	return ""
+func (cry *Cryptography) Decrypt(decryptBytes []byte) []byte {
+	block, err := aes.NewCipher([]byte(cry.Key))
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	aesGCM, err := cipher.NewGCM(block)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	nonceSize := aesGCM.NonceSize()
+
+	nonce, cipherDecrypt := decryptBytes[:nonceSize], decryptBytes[nonceSize:]
+
+	result, err := aesGCM.Open(nil, nonce, cipherDecrypt, nil)
+
+	if err != nil {
+		panic(err.Error())
+	}
+
+	return result
+
 }

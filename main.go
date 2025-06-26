@@ -11,7 +11,7 @@ import (
 	"github.com/legiorex/manager-password/output"
 )
 
-var FILE_NAME = "pass.json"
+var FILE_NAME = "pass"
 
 var menu = map[int]func(*account.VaultWithDb){
 	1: createAccount,
